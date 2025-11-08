@@ -1,45 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PPR Parlour Invoice</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#228b22">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="PPR Invoice">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
-    body {font-family:"Segoe UI",Tahoma,sans-serif;margin:10px;background:#f4f6f9;}
-    .invoice-container {max-width:850px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.1);}
-    .header{text-align:center;border-bottom:3px solid #444;margin-bottom:20px;padding-bottom:10px;}
-    .header h2{font-size:26px;margin:0;color:#222;}
-    .header p{margin:4px 0;font-size:14px;color:#555;}
-    .invoice-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin:15px 0;font-size:14px;}
-    .invoice-meta div{flex:1;min-width:140px;}
-    .invoice-meta input{width:100%;padding:8px;border:1px solid #bbb;border-radius:5px;font-size:14px;}
-    .customer{background:#fafafa;border:1px solid #ccc;border-radius:6px;padding:10px;margin-bottom:15px;}
-    .customer strong{display:block;margin:6px 0 3px;}
-    .customer input,.customer textarea{width:100%;padding:8px;border:1px solid #bbb;border-radius:4px;font-size:14px;}
-    table{width:100%;border-collapse:collapse;margin:15px 0;font-size:13px;}
-    table,th,td{border:1px solid #bbb;}
-    th{background:#444;color:#fff;padding:8px;}
-    td{text-align:center;padding:6px;}
-    td button{background:crimson;color:#fff;border:none;border-radius:4px;padding:5px 8px;cursor:pointer;}
-    td button:hover{background:darkred;}
-    .actions{text-align:center;margin:15px 0;}
-    button{background:#333;color:#fff;border:none;border-radius:6px;padding:10px 18px;margin:5px;font-size:14px;cursor:pointer;}
-    button:hover{background:#555;}
-    .footer{display:flex;justify-content:space-between;flex-wrap:wrap;margin-top:30px;font-size:12px;color:#555;}
-    @media(max-width:600px){body{margin:5px;}.invoice-container{padding:10px;border-radius:0;}.header h2{font-size:22px;}th,td{font-size:12px;padding:6px;}.invoice-meta{flex-direction:column;}.actions button{width:100%;margin:5px 0;}}
-    @media print{.actions,button,td:last-child,th:last-child{display:none!important;}body{background:#fff;margin:0;}.invoice-container{box-shadow:none;border:none;width:100%;}}
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      margin: 20px;
+      background: #f4f6f9;
+      color: #222;
+    }
+    .invoice-container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      text-align: center;
+      border-bottom: 3px solid #444;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 2rem;
+      color: #222;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .header p {
+      margin: 4px 0;
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    .invoice-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .invoice-meta div {
+      flex: 1 1 200px;
+      font-size: 0.9rem;
+    }
+    .invoice-meta input {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+    }
+
+    .customer {
+      margin: 15px 0;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fafafa;
+    }
+    .customer strong {
+      display: block;
+      margin: 8px 0 4px;
+      color: #333;
+    }
+    .customer input,
+    .customer textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+    .customer textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    .actions {
+      margin: 20px 0;
+      text-align: center;
+    }
+    button {
+      padding: 10px 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 6px;
+      background: #2e2e2e;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    button:hover {
+      background: #555;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      min-width: 700px;
+    }
+    table,
+    th,
+    td {
+      border: 1px solid #bbb;
+    }
+    th {
+      background: #444;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    th,
+    td {
+      padding: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    select.particulars {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      background: #fff;
+    }
+    td button {
+      background: crimson;
+      border: none;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    td button:hover {
+      background: darkred;
+    }
+
+    tfoot td {
+      font-weight: bold;
+      background: #f2f2f2;
+      font-size: 0.95rem;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 30px;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    @media (max-width: 600px) {
+      .header h2 {
+        font-size: 1.6rem;
+      }
+      th,
+      td {
+        font-size: 0.8rem;
+        padding: 8px;
+      }
+      button {
+        font-size: 0.85rem;
+        padding: 8px 14px;
+      }
+    }
+
+    @media print {
+      .actions, button, td:last-child, th:last-child {
+        display: none !important;
+      }
+      body {
+        background: #fff;
+        margin: 0;
+      }
+      .invoice-container {
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="invoice-container" id="invoice-container">
+  <div class="invoice-container">
     <div class="header">
       <h2>PPR PARLOUR</h2>
       <p><strong>Heritage Milk Shop</strong></p>
@@ -48,39 +205,74 @@
     </div>
 
     <div class="invoice-meta">
-      <div><strong>Invoice No:</strong> <input type="text" id="invoice-number"></div>
-      <div><strong>Date:</strong> <input type="date" id="invoice-date"></div>
+      <div><strong>Invoice No:</strong><input type="text" id="invoice-number" placeholder="INV-001"></div>
+      <div><strong>Date:</strong><input type="date" id="invoice-date"></div>
     </div>
 
     <div class="customer">
       <strong>Customer Name:</strong>
-      <input type="text" id="customer-name" value="Madhampatty Food Services">
+      <input type="text" id="customer-name" value="Madhampatty Food Services" />
       <strong>Address:</strong>
       <textarea id="customer-address">BMW India PVT
 No:36 1st Main Road
-Mahindra World City Chengalpettu</textarea>
+Mahindra World City Chengalpattu</textarea>
     </div>
 
-    <div class="actions"><button id="add-item">+ Add Item</button></div>
+    <div class="actions">
+      <button id="add-item">+ Add Item</button>
+    </div>
 
-    <table id="invoice">
-      <thead><tr><th>S.No</th><th>Particulars</th><th>Qty</th><th>Rate</th><th>Amount</th><th>Delete</th></tr></thead>
-      <tbody id="invoice-body">
-        <tr><td>1</td><td contenteditable="true">Full Cream Milk (950 ml)</td><td contenteditable="true"></td><td contenteditable="true"></td><td class="amount"></td><td><button onclick="deleteRow(this)">X</button></td></tr>
-      </tbody>
-      <tfoot><tr><td colspan="5" style="text-align:right;">TOTAL</td><td id="total"></td></tr></tfoot>
-    </table>
+    <div class="table-wrapper">
+      <table id="invoice">
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Particulars</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody id="invoice-body">
+          <tr>
+            <td>1</td>
+            <td>
+              <select class="particulars" onchange="updateRate(this)">
+                <option value="">Select</option>
+                <option value="Toned Milk (1000 ml)" data-rate="55">Toned Milk (1000 ml)</option>
+                <option value="Toned Curd (1000 ml)" data-rate="61">Toned Curd (1000 ml)</option>
+              </select>
+            </td>
+            <td contenteditable="true"></td>
+            <td class="rate"></td>
+            <td class="amount"></td>
+            <td><button onclick="deleteRow(this)">X</button></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="5" style="text-align: right;">TOTAL</td>
+            <td id="total"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
     <div class="actions">
       <button id="download">Download PDF</button>
       <button id="print">Print Invoice</button>
     </div>
 
-    <div class="footer"><div>Receiver Signature</div><div>Authorised Signature</div></div>
+    <div class="footer">
+      <div>Receiver Signature</div>
+      <div>Authorised Signature</div>
+    </div>
   </div>
 
   <script>
     document.getElementById("invoice-date").valueAsDate = new Date();
+
     function calculateTotal() {
       let rows = document.querySelectorAll("#invoice-body tr");
       let grandTotal = 0;
@@ -93,26 +285,52 @@ Mahindra World City Chengalpettu</textarea>
       });
       document.getElementById("total").innerText = grandTotal.toFixed(2);
     }
+
     document.addEventListener("input", calculateTotal);
+
+    function updateRate(select) {
+      const rate = select.options[select.selectedIndex].getAttribute("data-rate") || "";
+      const row = select.closest("tr");
+      row.querySelector(".rate").innerText = rate;
+      calculateTotal();
+    }
+
     document.getElementById("add-item").addEventListener("click", () => {
       let tbody = document.getElementById("invoice-body");
       let rowCount = tbody.rows.length + 1;
       let row = tbody.insertRow();
-      row.innerHTML = `<td>${rowCount}</td><td contenteditable="true">New Item</td><td contenteditable="true"></td><td contenteditable="true"></td><td class="amount"></td><td><button onclick="deleteRow(this)">X</button></td>`;
+      row.innerHTML = `
+        <td>${rowCount}</td>
+        <td>
+          <select class="particulars" onchange="updateRate(this)">
+            <option value="">Select</option>
+            <option value="Toned Milk (1000 ml)" data-rate="55">Toned Milk (1000 ml)</option>
+            <option value="Toned Curd (1000 ml)" data-rate="61">Toned Curd (1000 ml)</option>
+          </select>
+        </td>
+        <td contenteditable="true"></td>
+        <td class="rate"></td>
+        <td class="amount"></td>
+        <td><button onclick="deleteRow(this)">X</button></td>
+      `;
     });
+
     function deleteRow(button) {
       let row = button.closest("tr");
       row.remove();
       updateSerials();
       calculateTotal();
     }
+
     function updateSerials() {
       let rows = document.querySelectorAll("#invoice-body tr");
       rows.forEach((row, i) => row.cells[0].innerText = i + 1);
     }
+
     document.getElementById("download").addEventListener("click", () => {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF("p", "mm", "a4");
+
       doc.setFillColor(34, 139, 34);
       doc.setTextColor(255, 255, 255);
       doc.rect(12, 10, 185, 25, "F");
@@ -121,34 +339,50 @@ Mahindra World City Chengalpettu</textarea>
       doc.setFontSize(11);
       doc.text("No.49, Pillaiyar Kolli Street, Potheri - 603203", 20, 24);
       doc.text("Cell: 8608405491 / 9176429825", 20, 30);
+
       doc.setTextColor(0, 0, 0);
       doc.setFillColor(220, 241, 220);
       doc.rect(12, 40, 90, 40, "F");
       doc.rect(107, 40, 90, 40, "F");
+
       doc.setFontSize(12);
       doc.text("Customer: " + (document.getElementById("customer-name").value || ""), 14, 48);
       doc.text("Address: " + (document.getElementById("customer-address").value || ""), 14, 56);
       doc.text("Invoice No: " + (document.getElementById("invoice-number").value || ""), 110, 48);
       doc.text("Date: " + (document.getElementById("invoice-date").value || ""), 110, 56);
+
       let body = [];
       document.querySelectorAll("#invoice-body tr").forEach((row) => {
         let cells = row.querySelectorAll("td");
-        body.push([cells[0].innerText, cells[1].innerText, cells[2].innerText, cells[3].innerText, cells[4].innerText]);
+        body.push([
+          cells[0].innerText,
+          cells[1].querySelector("select") ? cells[1].querySelector("select").value : cells[1].innerText,
+          cells[2].innerText,
+          cells[3].innerText,
+          cells[4].innerText
+        ]);
       });
-      doc.autoTable({ startY: 85, head: [["S.No", "Particulars", "Qty", "Rate", "Amount"]], body: body, theme: 'grid', headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] } });
+
+      doc.autoTable({
+        startY: 85,
+        head: [["S.No", "Particulars", "Qty", "Rate", "Amount"]],
+        body: body,
+        theme: "grid",
+        styles: { fontSize: 11, halign: "center", valign: "middle" },
+        headStyles: { fillColor: [34, 139, 34], textColor: [255, 255, 255] },
+        foot: [["", "", "", "TOTAL", document.getElementById("total").innerText]]
+      });
+
       let finalY = doc.lastAutoTable.finalY || 270;
+      doc.setFontSize(10);
       doc.text("Receiver Signature", 14, finalY + 20);
       doc.text("Authorised Signature", 150, finalY + 20);
+
       doc.save("invoice.pdf");
     });
-    document.getElementById("print").addEventListener("click", () => {
-      window.print();
-    });
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js').then(reg => console.log('✅ Service Worker registered:', reg)).catch(err => console.log('❌ Service Worker error:', err));
-      });
-    }
+
+    document.getElementById("print").addEventListener("click", () => window.print());
   </script>
 </body>
 </html>
+
